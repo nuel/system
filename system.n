@@ -1,0 +1,170 @@
+# v21.9
+
+const ticks: heartrate * oxy * modifiers
+
+config: (
+## allocation
+	# fundamentals
+	const sub 0: consciousness
+	const sub 1: i/o
+
+	# active nodes
+	const act 0: analysis
+	const act 1: backlog
+
+	# stabilization and blocking
+	dyn act 2: creative output
+	dyn act 3: nonprogression force unlock
+	dyn act 4: emergency
+
+	>init sub
+	>init act
+)
+
+consciousness: (
+	depends: ticks > 0
+
+	>consider ticks
+	>?init analysis
+	>acknowledge analysis
+)
+
+i/o: (
+	depends: ticks > 0
+
+	# raw input
+	sensorial: raw
+
+	respiratory: (
+		sat: perc
+		waveform: [zero, sine, square, bell, diminished]
+
+		# different variants of the function
+		force: (zero, sine, square, bell, diminished)
+		pull: (zero, sine, square, bell, diminished)
+	)
+
+	linguistics: (
+		path: abstract
+
+		# standard routine
+		>quickfilter sensorial >> patterns
+		>map patterns << memory: language
+		>push path
+	)
+
+	>acknowledge analysis
+	>consider sensorial
+	>map sensorial << memory: reflexes
+	>linguistics
+	>analysis: logic
+)
+
+analysis: (
+	path: abstract
+
+	focus: (
+		>flatten input << path
+		>quickfilter path by input
+		>push path
+	)
+
+	logic: (
+		# internal train of thought
+		>consider path
+		>quickfilter path >> patterns
+		>map patterns << memory: short sort by relevance
+		>map patterns << memory: long sort by relevance
+
+		# external influences
+		>filter i/o: sensorial >> input
+		>map input << memory: short sort by relevance
+		>map input << memory: long sort by relevance
+
+		# modify path with readily available tools
+		>memory: utility: cache: rationality
+
+		# sometimes: auxiliary linguistics
+		>(
+			depends: ticks > 500, backlog: top = analysis
+			>?init i/o: linguistics
+			>consider i/o: linguistics: path
+			>flatten path << i/o: linguistics: path
+		)
+
+		>push path
+	)
+
+	expand: (
+		# fill in blanks or add associations
+		>consider path
+		>filter path >> patterns
+		>map patterns << memory: short sort by relevance
+		>map patterns << memory: long sort by relevance
+		>map patterns << memory: all sort by random
+		>flatten patterns << path
+		>push path
+	)
+)
+
+emergency: (
+	depends: ticks > 0, analysis
+
+	# too many inputs or analysis spiraling
+	overflow: (
+		trigger: i/o: overflow error, analysis: spiral
+
+		>analysis: focus << i/o: respiratory: waveform
+		>i/o: respiratory: force: sine
+		>analysis: focus << i/o: sensorial
+		>analysis: focus << analysis: mood
+		>analysis: focus << analysis: path
+		>backlog: reindex
+		>analysis: focus << backlog: top
+	)
+
+	# mood is dropping
+	mood: (
+		trigger: analysis: mood < 2
+
+		>backlog: sort by reward, threshold
+		>analysis: focus << analysis: mood
+		>analysis: focus << memory: long: relationships: primary
+		>analysis: acknowledge (memory: long sort by i: analysis: mood): top
+		>init backlog: top
+	)
+
+	# something else messed up
+	unstable: (
+		trigger: i/o: respiratory: sat < 0.2,
+				 i/o: sensorial: nutrition < 0.05
+				 i/o: sensorial: hydration < 0.05
+				 i/o: sensorial: energy < 1
+				 i/o: sensorial: pain > 7
+
+		>init softblock analysis
+	)
+)
+
+# various routines
+nonprogression force unlock: (
+	depends: analysis, ticks > 1000
+	trigger: analysis: init error
+
+	 >block analysis: reductio ad infinitum
+	 >acknowledge analysis: antipattern recognition
+	 >block init: emergency: mood
+	 >block init: emergency: unstable
+	 >force init: resume
+)
+
+creative output: (
+	depends: analysis, ticks > 700
+	trigger: analysis: backlog match,
+			 analysis: wide view,
+			 analysis: path acceleration
+			 analysis: conclusion
+
+	>analysis: expand << analysis: path >> input
+	>backlog: add << input
+)
